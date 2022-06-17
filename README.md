@@ -1,6 +1,8 @@
 # php-linked-list
 A linked list implementation in PHP. This linked list will maintain an ordered list of nodes from smallest to greatest. Inserting a new node will place it in the correct position, so the list should never need to be reordered.
 
+It is considered a "stable order" as new nodes that are added, are placed *after* nodes with the same value.
+
 Additionally, the linked list can also be reversed using `$list->reverse();`.
 
 ## To run
