@@ -15,6 +15,11 @@ class LinkedList
     protected $head = null;
 
     /**
+     * @var boolean
+     */
+    protected $isReversed = false;
+
+    /**
      * Return the head node, first node in the list
      *
      * @return LinkedListNode|null
@@ -37,10 +42,15 @@ class LinkedList
         if ($this->head === null) {
             $this->head = $newNode;
         } else {
-            $node = $this->_findLastNodeLteValue($value);
+            $previous = $this->_findPrevious($value);
 
-            $newNode->setNext($node->getNext());
-            $node->setNext($newNode);
+            if ($previous === null) {
+                $newNode->setNext($this->head);
+                $this->head = $newNode;
+            } else {
+                $newNode->setNext($previous->getNext());
+                $previous->setNext($newNode);
+            }
         }
 
         return $this;
@@ -65,29 +75,47 @@ class LinkedList
         }
 
         $this->head = $previous;
+        $this->isReversed = !$this->isReversed;
 
         return $this;
     }
 
     /**
-     * Find last node that has a value less-than-or-equal-to the supplied value
+     * Find last node that has a value less-than-or-equal-to the supplied value (if list is forward-ordered).
+     * If list is reverse ordered, this will find the node with value greater-than-or-equal-to the supplied value.
      *
      * @param integer $value
-     * @return LinkedListNode
+     * @return LinkedListNode|null
      */
-    protected function _findLastNodeLteValue(int $value): LinkedListNode
+    protected function _findPrevious(int $value): ?LinkedListNode
     {
+        $previous = null;
         $current = $this->head;
 
-        if ($current === null) {
-            throw new \RuntimeException('List is empty, cannot find "next" node.');
+        while ($current !== null) {
+            if ($this->_isNodeAfterValue($current, $value)) {
+                break;
+            }
+
+            $previous = $current;
+            $current = $previous->getNext();
         }
 
-        while ($current->getNext() !== null && $value >= $current->getNext()->getValue()) {
-            $current = $current->getNext();
-        }
+        return $previous;
+    }
 
-        return $current;
+    /**
+     * Check if the supplied node should be placed later in the list than the value passed.
+     *
+     * @param LinkedListNode $node
+     * @param integer $value
+     * @return boolean
+     */
+    protected function _isNodeAfterValue(LinkedListNode $node, int $value): bool
+    {
+        return $this->isReversed
+            ? $value >= $node->getValue()
+            : $value <= $node->getValue();
     }
 
     /**

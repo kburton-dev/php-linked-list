@@ -4,8 +4,9 @@ require_once('LinkedList.php');
 
 $linkedList = new LinkedList();
 
-$linkedList->add(1)
-    ->add(3)
+$linkedList
+    ->add(2)
+    ->add(1)
     ->add(5)
     ->add(2)
     ->add(7)
